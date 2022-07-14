@@ -52,7 +52,7 @@ public class PessoaDadosPessoaisCreateDTO {
     private String rg;
 
     @Schema(description = "Sexo do usuário")
-    @NotBlank
+    @NotNull
     private Sexo sexo;
 
     @Schema(description = "Título de eleitor do usuário")
