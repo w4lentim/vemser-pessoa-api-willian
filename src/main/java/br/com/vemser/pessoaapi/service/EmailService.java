@@ -2,14 +2,12 @@ package br.com.vemser.pessoaapi.service;
 
 import br.com.vemser.pessoaapi.dto.EnderecoDTO;
 import br.com.vemser.pessoaapi.dto.PessoaDTO;
-import br.com.vemser.pessoaapi.entity.Endereco;
-import br.com.vemser.pessoaapi.entity.Pessoa;
-import br.com.vemser.pessoaapi.entity.TipoDeMensagem;
-import br.com.vemser.pessoaapi.exceptions.RegraDeNegocioException;
+import br.com.vemser.pessoaapi.entity.EnderecoEntity;
+import br.com.vemser.pessoaapi.entity.PessoaEntity;
+import br.com.vemser.pessoaapi.enums.TipoDeMensagem;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -35,59 +33,6 @@ public class EmailService {
     private String from;
 
     private final JavaMailSender emailSender;
-
-    public void sendSimpleMessage() {
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setFrom(from);
-        message.setTo("willian.valentim@dbccompany.com.br");
-        message.setSubject("Assunto de teste");
-        message.setText("Meu e-mail de teste backend.");
-        emailSender.send(message);
-    }
-
-    public void sendWithAttachment() throws MessagingException {
-        MimeMessage message = emailSender.createMimeMessage();
-
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-        helper.setFrom(from);
-        helper.setTo("willian.valentim@dbccompany.com.br");
-        helper.setSubject("Assunto teste com imagem.");
-        helper.setText("Meu e-mail de teste enviando imagem backend 2.");
-
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file2 = new File(classLoader.getResource("imagem.png").getFile());
-        FileSystemResource file = new FileSystemResource(file2);
-        helper.addAttachment(file2.getName(), file);
-
-        emailSender.send(message);
-    }
-
-    public void sendEmail() {
-        MimeMessage mimeMessage = emailSender.createMimeMessage();
-        try {
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-            mimeMessageHelper.setFrom(from);
-            mimeMessageHelper.setTo("willian.valentim@dbccompany.com.br");
-            mimeMessageHelper.setSubject("Assunto teste email 3");
-            mimeMessageHelper.setText(getContentFromTemplate(), true);
-
-            emailSender.send(mimeMessageHelper.getMimeMessage());
-        } catch (MessagingException | IOException | TemplateException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String getContentFromTemplate() throws IOException, TemplateException {
-        Map<String, Object> dados = new HashMap<>();
-        dados.put("nome", "Meu nome");
-        dados.put("email", "willian.valentim@dbccompany.com.br");
-
-        Template template = fnConfiguration.getTemplate("email-template.ftl");
-        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
-        return html;
-    }
 
     public void sendEmailPessoa(PessoaDTO pessoaDTO, String tipo) {
         MimeMessage mimeMessage = emailSender.createMimeMessage();
